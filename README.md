@@ -1,1 +1,1 @@
-# ringzer0ctf challenges
+# ringzer0ctf-challenges
