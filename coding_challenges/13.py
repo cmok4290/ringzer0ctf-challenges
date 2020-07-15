@@ -4,38 +4,44 @@ import hashlib
 import json
 import re
 import requests
-# import time
+import time
 
-# initial config
-s = requests.Session()
-url = 'https://ringzer0ctf.com/challenges/13'
 
-with open('config.json', 'r') as f:
-    config = json.load(f)
+def main():
+    # initial config
+    s = requests.Session()
+    url = 'https://ringzer0ctf.com/challenges/13'
 
-cookie = {"PHPSESSID": config["PHPSESSID"]}
-regex = re.compile(r'[\n\r\t]')
+    with open('config.json', 'r') as f:
+        config = json.load(f)
 
-# initial request
-r = s.get(url, cookies=cookie)
-# start = time.time()
-soup = BeautifulSoup(r.text, features="lxml")
+    cookie = {"PHPSESSID": config["PHPSESSID"]}
+    regex = re.compile(r'[\n\r\t]')
 
-# retrieve message
-tag = soup.find("div", class_="message")
-message = tag.contents[2]
-message = regex.sub("", message)
+    # initial request
+    r = s.get(url, cookies=cookie)
+    start = time.time()
+    soup = BeautifulSoup(r.text, features="lxml")
 
-# create hash
-hashed = hashlib.sha512(message.encode()).hexdigest()
+    # retrieve message
+    tag = soup.find("div", class_="message")
+    message = tag.contents[2]
+    message = regex.sub("", message)
 
-# submit hash
-r = s.get(f'{url}/{hashed}', cookies=cookie)
-soup = BeautifulSoup(r.text, features="lxml")
+    # create hash
+    hashed = hashlib.sha512(message.encode()).hexdigest()
 
-# retrieve challenge flag
-tag = soup.find("div", class_="alert alert-info")
-flag = tag.contents[0]
-print(flag)
-# end = time.time() - start
-# print(round(end, 3), 's')
+    # submit hash
+    r = s.get(f'{url}/{hashed}', cookies=cookie)
+    soup = BeautifulSoup(r.text, features="lxml")
+
+    # retrieve challenge flag
+    tag = soup.find("div", class_="alert alert-info")
+    flag = tag.contents[0]
+    print(flag)
+    end = time.time() - start
+    print(round(end, 3), 's')
+
+
+if __name__ == '__main__':
+    main()
