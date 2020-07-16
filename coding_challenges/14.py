@@ -8,11 +8,11 @@ def main():
 
     challenge = Challenge(14)
     message = challenge.get_challenge()
-    print(message)
+    # print(message)
     message = ''.join([chr(int(message[i:i+8], 2))
                        for i in range(0, len(message), 8)])
     hashed_message = challenge.get_hash("sha512", message)
-    print(hashed_message)
+    # print(hashed_message)
     flag = challenge.post_challenge(hashed_message)
     print(flag)
 

@@ -8,9 +8,9 @@ def main():
 
     challenge = Challenge(13)
     message = challenge.get_challenge()
-    print(message)
+    # print(message)
     hashed_message = challenge.get_hash("sha512", message)
-    print(hashed_message)
+    # print(hashed_message)
     flag = challenge.post_challenge(hashed_message)
     print(flag)
 
