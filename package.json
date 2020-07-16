@@ -2,7 +2,7 @@
   "name": "ringzer0ctf",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "private": true,
   "scripts": {
     "lint": "./node_modules/.bin/prettier -l .",
     "lint-fix": "./node_modules/.bin/prettier --write .",
@@ -10,7 +10,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "GPL-v3",
   "dependencies": {},
   "devDependencies": {
     "husky": "^4.2.5",
