@@ -3,15 +3,17 @@ from utils.constants import URL
 import utils.challenge as c
 import requests
 import time
+import sys
 
 
 def main():
     prog_start = time.time()
+    challenge_id = sys.argv[0].split('.')[0]
 
     session = requests.Session()
     cookie = c.get_cookie('config.json')
 
-    challenge, messages = c.get_challenge(session, URL, 14, cookie)
+    challenge, messages = c.get_challenge(session, URL, challenge_id, cookie)
     # print(challenge)
     # print(messages)
     bin_message = messages[0]
@@ -22,7 +24,7 @@ def main():
     seconds = c.get_seconds(challenge.contents[1])
     algorithm = c.get_algorithm(challenge.contents[1])
     payload = c.get_hash(algorithm, message)
-    flag = c.post_challenge(session, URL, 14, cookie, payload)
+    flag = c.post_challenge(session, URL, challenge_id, cookie, payload)
     print(flag)
 
     cha_end = time.time() - cha_start

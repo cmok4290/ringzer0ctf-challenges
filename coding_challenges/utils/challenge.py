@@ -60,3 +60,17 @@ def post_challenge(session, url, challenge_id, cookie, data):
     soup = BeautifulSoup(res.content, features='lxml')
     flag = soup.find('div', class_='alert alert-info')
     return flag.contents[0]
+
+
+def str_to_int(s):
+    # is binary?
+    s_set = set(s)
+    binary = {"0", "1"}
+    if s_set == binary or s_set == {"0"} or s_set == {"1"}:
+        return int(s, 2)
+    # is hex?
+    if s.startswith('0x'):
+        return int(s, 16)
+    # is int?
+    if s.isnumeric():
+        return int(s, 10)
