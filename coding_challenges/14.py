@@ -1,23 +1,36 @@
 #!/usr/bin/env python
-from lib.challenge import Challenge
+from utils.constants import URL
+import utils.challenge as c
+import requests
 import time
 
 
 def main():
-    start = time.time()
+    prog_start = time.time()
 
-    challenge = Challenge(14)
-    message = challenge.get_challenge()
-    # print(message)
-    message = ''.join([chr(int(message[i:i+8], 2))
-                       for i in range(0, len(message), 8)])
-    hashed_message = challenge.get_hash("sha512", message)
-    # print(hashed_message)
-    flag = challenge.post_challenge(hashed_message)
+    session = requests.Session()
+    cookie = c.get_cookie('config.json')
+
+    challenge, messages = c.get_challenge(session, URL, 14, cookie)
+    # print(challenge)
+    # print(messages)
+    bin_message = messages[0]
+    message = [chr(int(bin_message[i:i+8], 2)) for i in range(0, len(bin_message), 8)]
+    message = ''.join(message)
+
+    cha_start = time.time()
+    seconds = c.get_seconds(challenge.contents[1])
+    algorithm = c.get_algorithm(challenge.contents[1])
+    payload = c.get_hash(algorithm, message)
+    flag = c.post_challenge(session, URL, 14, cookie, payload)
     print(flag)
 
-    end = time.time() - start
-    print(round(end, 3), 's')
+    cha_end = time.time() - cha_start
+    print(f'challenge: {seconds}s')
+    print(f'actual: {round(cha_end, 3)}s')
+
+    prog_end = time.time() - prog_start
+    print(f'total: {round(prog_end, 3)}s')
 
 
 if __name__ == '__main__':
