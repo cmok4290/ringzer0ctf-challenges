@@ -4,3 +4,4 @@ node_modules/
 config.json
 __pycache__/
 *.pyc
+.pytest_cache/
