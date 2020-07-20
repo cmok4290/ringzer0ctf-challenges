@@ -1,35 +1,52 @@
 #!/usr/bin/env python
-from utils.constants import URL
-import utils.challenge as c
+from dotenv import load_dotenv
+import hashlib
+import os
+import re
 import requests
-import time
 import sys
+
+load_dotenv()
+
+LOGIN = 'https://ringzer0ctf.com/login'
+CHALLENGE = 'https://ringzer0ctf.com/challenges/' + sys.argv[0].split('.')[0]
+
+
+def get_hash(password, hash_type='sha512'):
+    if hash_type in hashlib.algorithms_available:
+        h = hashlib.new(hash_type)
+        h.update(password.encode('utf-8'))
+        return h.hexdigest()
+    return None
 
 
 def main():
-    prog_start = time.time()
-    challenge_id = sys.argv[0].split('.')[0]
+    credentials = {'username': os.getenv(
+        'RZ_CTF_USER'), 'password': os.getenv('RZ_CTF_PASS')}
 
-    session = requests.Session()
-    cookie = c.get_cookie('config.json')
+    with requests.Session() as s:
+        post_res = s.post(LOGIN, data={'username': os.getenv(
+            'RZ_CTF_USER'), 'password': os.getenv('RZ_CTF_PASS')})
 
-    challenge, messages = c.get_challenge(session, URL, challenge_id, cookie)
-    # print(challenge)
-    # print(messages)
+        if post_res:
+            get_res = s.get(CHALLENGE)
 
-    cha_start = time.time()
-    seconds = c.get_seconds(challenge.contents[1])
-    algorithm = c.get_algorithm(challenge.contents[1])
-    payload = c.get_hash(algorithm, messages[0])
-    flag = c.post_challenge(session, URL, challenge_id, cookie, payload)
-    print(flag)
+        if get_res:
+            # print(get_res.text)
+            message_match = re.search(
+                r'(?<=----- BEGIN MESSAGE -----<br \/>\r\n\t\t)(.*)(?=<br \/>\r\n\t\t----- END MESSAGE -----)', get_res.text)
+            # print(message_match.group(0))
+            hashed_pw = get_hash(message_match.group(0))
+            # print(secret)
+            if hashed_pw is not None:
+                flag_res = s.get(CHALLENGE + '/' + hashed_pw)
+            else:
+                print('hash not created, try again')
+                exit(0)
 
-    cha_end = time.time() - cha_start
-    print(f'challenge: {seconds}s')
-    print(f'actual: {round(cha_end, 3)}s')
-
-    prog_end = time.time() - prog_start
-    print(f'total: {round(prog_end, 3)}s')
+        if flag_res:
+            flag_match = re.search(r'FLAG-[a-zA-Z0-9]+', flag_res.text)
+            print(flag_match.group(0))
 
 
 if __name__ == '__main__':
