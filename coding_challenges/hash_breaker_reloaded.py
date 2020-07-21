@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding_challenges/hash_breaker_reloaded.py
 from dotenv import load_dotenv
 import hashlib
 import os
@@ -13,10 +14,15 @@ COMMON_PASSWORDS = requests.get(
     'https://raw.githubusercontent.com/danielmiessler/SecLists/master/Passwords/Common-Credentials/10-million-password-list-top-1000000.txt').text.split('\n')
 
 
-def brute_force(hash_str, salt_str, hash_type='sha1'):
+def brute_force(hash_str, salt_str=None, hash_type='sha1'):
     for password in COMMON_PASSWORDS:
         h = hashlib.new(hash_type)
-        h.update(password.encode('utf-8')+salt_str.encode('utf-8'))
+        enc_pass = password.encode('utf-8')
+        if salt_str is not None:
+            enc_salt = salt_str.encode('utf-8')
+            h.update(enc_pass+enc_salt)
+        else:
+            h.update(enc_pass)
         if h.hexdigest() == hash_str:
             return password
     return None
@@ -50,7 +56,9 @@ def main():
 
         if flag_res:
             flag_match = re.search(r'FLAG-[a-zA-Z0-9]+', flag_res.text)
-            print(flag_match.group(0))
+            flag = flag_match.group(0)
+            print(flag)
+    return flag
 
 
 if __name__ == '__main__':

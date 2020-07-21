@@ -4,12 +4,11 @@ import hashlib
 import os
 import re
 import requests
-import sys
 
 load_dotenv()
 
 LOGIN = 'https://ringzer0ctf.com/login'
-CHALLENGE = 'https://ringzer0ctf.com/challenges/' + sys.argv[0].split('.')[0]
+CHALLENGE = 'https://ringzer0ctf.com/challenges/14'
 
 
 def get_hash(password, hash_type='sha512'):
@@ -50,7 +49,9 @@ def main():
 
         if flag_res:
             flag_match = re.search(r'FLAG-[a-zA-Z0-9]+', flag_res.text)
+            flag = flag_match.group(0)
             print(flag_match.group(0))
+    return flag
 
 
 if __name__ == '__main__':
