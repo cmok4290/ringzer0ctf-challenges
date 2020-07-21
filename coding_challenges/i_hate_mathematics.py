@@ -1,16 +1,17 @@
 #!/usr/bin/env python
-from dotenv import load_dotenv
 import hashlib
+import json
 import operator
 import os
 import re
 import requests
 
-load_dotenv()
-
 LOGIN = 'https://ringzer0ctf.com/login'
 CHALLENGE = 'https://ringzer0ctf.com/challenges/32'
 OPS = {'+': operator.add, '-': operator.sub}
+
+with open('config.json', 'r') as f:
+    DATA = json.load(f)
 
 
 def to_int(s):
@@ -26,12 +27,8 @@ def to_int(s):
 
 
 def main():
-    credentials = {'username': os.getenv(
-        'RZ_CTF_USER'), 'password': os.getenv('RZ_CTF_PASS')}
-
     with requests.Session() as s:
-        post_res = s.post(LOGIN, data={'username': os.getenv(
-            'RZ_CTF_USER'), 'password': os.getenv('RZ_CTF_PASS')})
+        post_res = s.post(LOGIN, data=DATA)
 
         if post_res:
             get_res = s.get(CHALLENGE)

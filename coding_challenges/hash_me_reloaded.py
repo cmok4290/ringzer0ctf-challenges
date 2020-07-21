@@ -1,14 +1,15 @@
 #!/usr/bin/env python
-from dotenv import load_dotenv
 import hashlib
+import json
 import os
 import re
 import requests
 
-load_dotenv()
-
 LOGIN = 'https://ringzer0ctf.com/login'
 CHALLENGE = 'https://ringzer0ctf.com/challenges/14'
+
+with open('config.json', 'r') as f:
+    DATA = json.load(f)
 
 
 def get_hash(password, hash_type='sha512'):
@@ -20,12 +21,8 @@ def get_hash(password, hash_type='sha512'):
 
 
 def main():
-    credentials = {'username': os.getenv(
-        'RZ_CTF_USER'), 'password': os.getenv('RZ_CTF_PASS')}
-
     with requests.Session() as s:
-        post_res = s.post(LOGIN, data={'username': os.getenv(
-            'RZ_CTF_USER'), 'password': os.getenv('RZ_CTF_PASS')})
+        post_res = s.post(LOGIN, data=DATA)
 
         if post_res:
             get_res = s.get(CHALLENGE)
